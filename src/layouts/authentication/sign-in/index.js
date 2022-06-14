@@ -32,8 +32,8 @@ function SignIn() {
       title="Nice to see you!"
       color="white"
       description="Enter your email and password to sign in"
-      premotto="INSPIRED BY THE FUTURE:"
-      motto="THE VISION UI DASHBOARD"
+      premotto=""
+      motto="Welcome"
       image={bgSignIn}
     >
       <VuiBox component="form" role="form">

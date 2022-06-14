@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useContext } from "react";
 
 // react-router components
 import { Route, Switch, Redirect, useLocation } from "react-router-dom";
@@ -30,12 +30,19 @@ import routes from "routes";
 // Vision UI Dashboard React contexts
 import { useVisionUIController, setMiniSidenav, setOpenConfigurator } from "context";
 
+///User context
+import { UserContext } from "context/UserContext";
+
+//importing protectedRoute
+import ProtectedRoute from "protected.route";
+
 export default function App() {
   const [controller, dispatch] = useVisionUIController();
   const { miniSidenav, direction, layout, openConfigurator, sidenavColor } = controller;
   const [onMouseEnter, setOnMouseEnter] = useState(false);
   const [rtlCache, setRtlCache] = useState(null);
   const { pathname } = useLocation();
+  const [user, setUser] = useContext(UserContext);
 
   // Cache for the rtl
   useMemo(() => {
@@ -84,7 +91,12 @@ export default function App() {
       }
 
       if (route.route) {
-        return <Route exact path={route.route} component={route.component} key={route.key} />;
+        if(route.route=="/authentication/sign-in"){
+
+          return <Route exact path={route.route} component={route.component} key={route.key} />;
+        }
+    
+        return <ProtectedRoute exact path={route.route} component={route.component} key={route.key} />;
       }
 
       return null;
@@ -135,7 +147,11 @@ export default function App() {
         {layout === "vr" && <Configurator />}
         <Switch>
           {getRoutes(routes)}
-          <Redirect from="*" to="/dashboard" />
+          {user.isLoggedIn ? (
+            <Redirect from="*" to="/dashboard" />
+          ) : (
+            <Redirect from="*" to="/authentication/sign-in" />
+          )}
         </Switch>
       </ThemeProvider>
     </CacheProvider>
@@ -159,7 +175,12 @@ export default function App() {
       {layout === "vr" && <Configurator />}
       <Switch>
         {getRoutes(routes)}
-        <Redirect from="*" to="/dashboard" />
+
+        {user.isLoggedIn ? (
+          <Redirect from="*" to="/dashboard" />
+        ) : (
+          <Redirect from="*" to="/authentication/sign-in" />
+        )}
       </Switch>
     </ThemeProvider>
   );
