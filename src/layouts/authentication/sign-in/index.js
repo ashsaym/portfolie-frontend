@@ -44,14 +44,18 @@ function SignIn() {
   });
 
   const submitLogin = () => {
-    axios
-      .post(`${process.env.REACT_APP_API_URL}/data/accounts/login/`, {
+    Promise.all([
+      axios.post(`${process.env.REACT_APP_API_URL}/data/accounts/login/`, {
         email: email,
         password: password,
-      })
+      }),
+      axios.post(`${process.env.REACT_APP_API_URL}/data/token/get/`, {
+        email: email,
+        password: password,
+      }),
+    ])
       .then((data) => {
-        console.log(data);
-        cookies.set("token", data.data.key);
+        cookies.set("token", data[1].data.access);
         setUser({ isLoggedIn: true });
 
         history.push("/dashboard");
