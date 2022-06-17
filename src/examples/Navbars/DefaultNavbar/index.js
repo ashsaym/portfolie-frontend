@@ -42,6 +42,9 @@ import breakpoints from "assets/theme/base/breakpoints";
 import colors from "assets/theme/base/colors";
 import borders from "assets/theme/base/borders";
 
+/// image
+import Logo from "../../../assets/images/saym1.png";
+
 function DefaultNavbar({ transparent, light, action }) {
   const { borderCol } = colors;
   const { borderWidth } = borders;
@@ -105,7 +108,7 @@ function DefaultNavbar({ transparent, light, action }) {
         })}
       >
         <VuiBox component={Link} to="/" py={transparent ? 1.5 : 0.75} lineHeight={1}>
-          <VuiTypography
+          {/* <VuiTypography
             variant="button"
             textGradient={true}
             color="logo"
@@ -117,7 +120,8 @@ function DefaultNavbar({ transparent, light, action }) {
             }}
           >
             Abu Saym
-          </VuiTypography>
+          </VuiTypography> */}
+          <img src={Logo} alt="" style={{width:"120px"}}/>
         </VuiBox>
         <VuiBox color="inherit" display={{ xs: "none", lg: "flex" }} m={0} p={0}>
           {/* <DefaultNavbarLink icon="donut_large" name="dashboard" route="/dashboard" />

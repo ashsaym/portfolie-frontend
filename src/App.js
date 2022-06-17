@@ -35,6 +35,7 @@ import { UserContext } from "context/UserContext";
 
 //importing protectedRoute
 import ProtectedRoute from "protected.route";
+import Cookies from "universal-cookie";
 
 export default function App() {
   const [controller, dispatch] = useVisionUIController();
@@ -43,6 +44,7 @@ export default function App() {
   const [rtlCache, setRtlCache] = useState(null);
   const { pathname } = useLocation();
   const [user, setUser] = useContext(UserContext);
+  const cookies = new Cookies();
 
   // Cache for the rtl
   useMemo(() => {
@@ -52,6 +54,17 @@ export default function App() {
     });
 
     setRtlCache(cacheRtl);
+  }, []);
+
+  const checkLoggedIn = () => {
+    const token = cookies.get("token");
+    if (token !== undefined) {
+
+      setUser({ isLoggedIn: true });
+    }
+  };
+  useEffect(() => {
+    checkLoggedIn();
   }, []);
 
   // Open sidenav when mouse enter on mini sidenav
@@ -91,12 +104,13 @@ export default function App() {
       }
 
       if (route.route) {
-        if(route.route=="/authentication/sign-in"){
-
+        if (route.route == "/authentication/sign-in") {
           return <Route exact path={route.route} component={route.component} key={route.key} />;
         }
-    
-        return <ProtectedRoute exact path={route.route} component={route.component} key={route.key} />;
+
+        return (
+          <ProtectedRoute exact path={route.route} component={route.component} key={route.key} />
+        );
       }
 
       return null;
@@ -135,7 +149,7 @@ export default function App() {
             <Sidenav
               color={sidenavColor}
               brand=""
-              brandName="VISION UI FREE"
+              brandName="Abu Saym"
               routes={routes}
               onMouseEnter={handleOnMouseEnter}
               onMouseLeave={handleOnMouseLeave}

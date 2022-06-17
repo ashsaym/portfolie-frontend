@@ -49,6 +49,8 @@ import { useVisionUIController, setMiniSidenav, setTransparentSidenav } from "co
 // Vision UI Dashboard React icons
 import SimmmpleLogo from "examples/Icons/SimmmpleLogo";
 
+import Logo from "../../assets/images/saym1.png";
+
 // function Sidenav({ color, brand, brandName, routes, ...rest }) {
 function Sidenav({ color, brandName, routes, ...rest }) {
   const [controller, dispatch] = useVisionUIController();
@@ -88,6 +90,9 @@ function Sidenav({ color, brandName, routes, ...rest }) {
     let returnValue;
 
     if (type === "collapse") {
+      if (name === "Profile" || name === "Sign In" || name === "Sign Up") {
+        return "";
+      }
       returnValue = href ? (
         <Link
           href={href}
@@ -117,22 +122,22 @@ function Sidenav({ color, brandName, routes, ...rest }) {
         </NavLink>
       );
     } else if (type === "title") {
-      returnValue = (
-        <VuiTypography
-          key={key}
-          color="white"
-          display="block"
-          variant="caption"
-          fontWeight="bold"
-          textTransform="uppercase"
-          pl={3}
-          mt={2}
-          mb={1}
-          ml={1}
-        >
-          {title}
-        </VuiTypography>
-      );
+      // returnValue = (
+      //   <VuiTypography
+      //     key={key}
+      //     color="white"
+      //     display="block"
+      //     variant="caption"
+      //     fontWeight="bold"
+      //     textTransform="uppercase"
+      //     pl={3}
+      //     mt={2}
+      //     mb={1}
+      //     ml={1}
+      //   >
+      //     {title}
+      //   </VuiTypography>
+      // );
     } else if (type === "divider") {
       returnValue = <Divider light key={key} />;
     }
@@ -184,26 +189,8 @@ function Sidenav({ color, brandName, routes, ...rest }) {
                 })
               }
             >
-              <SimmmpleLogo size="24px" />
+              <img src={Logo} alt="" style={{ width: "160px" }} />
             </VuiBox>
-            <VuiTypography
-              variant="button"
-              textGradient={true}
-              color="logo"
-              fontSize={14}
-              letterSpacing={2}
-              fontWeight="medium"
-              sx={
-                ((theme) => sidenavLogoLabel(theme, { miniSidenav, transparentSidenav }),
-                {
-                  opacity: miniSidenav || (miniSidenav && transparentSidenav) ? 0 : 1,
-                  maxWidth: miniSidenav || (miniSidenav && transparentSidenav) ? 0 : "100%",
-                  margin: "0 auto",
-                })
-              }
-            >
-              {brandName}
-            </VuiTypography>
           </VuiBox>
         </VuiBox>
       </VuiBox>
@@ -224,22 +211,7 @@ function Sidenav({ color, brandName, routes, ...rest }) {
             pt: 2,
           },
         })}
-      >
-        <SidenavCard color={color} />
-        <VuiBox mt={2}>
-          <VuiButton
-            component="a"
-            href="https://creative-tim.com/product/vision-ui-dashboard-pro-react"
-            target="_blank"
-            rel="noreferrer"
-            variant="gradient"
-            color={color}
-            fullWidth
-          >
-            Upgrade to PRO
-          </VuiButton>
-        </VuiBox>
-      </VuiBox>
+      ></VuiBox>
     </SidenavRoot>
   );
 }

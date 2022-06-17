@@ -16,7 +16,8 @@
 
 */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { UserContext } from "context/UserContext";
 
 // react-router components
 import { useLocation, Link } from "react-router-dom";
@@ -60,6 +61,9 @@ import {
 // Images
 import team2 from "assets/images/team-2.jpg";
 import logoSpotify from "assets/images/small-logos/logo-spotify.svg";
+import logoutLogo from "assets/images/logout.svg";
+import Cookies from "universal-cookie";
+import axios from "axios";
 
 function DashboardNavbar({ absolute, light, isMini }) {
   const [navbarType, setNavbarType] = useState();
@@ -67,7 +71,14 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator } = controller;
   const [openMenu, setOpenMenu] = useState(false);
   const route = useLocation().pathname.split("/").slice(1);
+  const [user, setUser] = useContext(UserContext);
+  const cookies = new Cookies();
+  const handleLogout = () => {
+    setUser({ isLoggedIn: false });
+    cookies.remove("token");
 
+    axios.post(`${process.env.REACT_APP_API_URL}/data/accounts/logout/`);
+  };
   useEffect(() => {
     // Setting the navbar type
     if (fixedNavbar) {
@@ -166,24 +177,30 @@ function DashboardNavbar({ absolute, light, isMini }) {
               />
             </VuiBox>
             <VuiBox color={light ? "white" : "inherit"}>
-              <Link to="/authentication/sign-in">
-                <IconButton sx={navbarIconButton} size="small">
-                  <Icon
+              <IconButton
+                sx={navbarIconButton}
+                size="small"
+                onClick={() => {
+                  handleLogout();
+                }}
+              >
+                {/* <Icon
                     sx={({ palette: { dark, white } }) => ({
                       color: light ? white.main : dark.main,
                     })}
                   >
                     account_circle
-                  </Icon>
-                  <VuiTypography
-                    variant="button"
-                    fontWeight="medium"
-                    color={light ? "white" : "dark"}
-                  >
-                    Sign in
-                  </VuiTypography>
-                </IconButton>
-              </Link>
+                  </Icon> */}
+                <img src={logoutLogo} alt="" />
+                <VuiTypography
+                  variant="button"
+                  fontWeight="medium"
+                  color={light ? "white" : "dark"}
+                >
+                  Logout
+                </VuiTypography>
+              </IconButton>
+
               <IconButton
                 size="small"
                 color="inherit"
