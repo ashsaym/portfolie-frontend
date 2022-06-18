@@ -35,9 +35,6 @@ import ReactApexChart from "react-apexcharts";
 // }
 
 const LineChart = ({ lineChartData, lineChartOptions }) => {
-  useEffect(() => {
-    console.log(lineChartOptions);
-  }, [lineChartOptions]);
   return (
     <ReactApexChart
       options={lineChartOptions}

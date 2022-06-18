@@ -19,7 +19,7 @@
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Icon from "@mui/material/Icon";
-import { Card, LinearProgress, Stack } from "@mui/material";
+import { Card, LinearProgress, Stack, Typography } from "@mui/material";
 
 // Vision UI Dashboard React components
 import VuiBox from "components/VuiBox";
@@ -71,7 +71,16 @@ function Dashboard() {
   const [toDate, setToDate] = useState(
     new Date().getFullYear() + "-" + ("0" + (new Date().getMonth() + 1)).slice(-2)
   );
-  const [customOverview, setCustomOverview] = useState({});
+  const [customOverview, setCustomOverview] = useState({
+    Total_Days: 0,
+    Total_Flexitime: 0,
+    Total_Holiday: 0,
+    Total_Hours: 0,
+    Total_SickLeave: 0,
+    Total_Vacation: 0,
+    Total_WorkDay: 0,
+    Total_Worked: 0,
+  });
   const [lineChartData, setLineChartData] = useState([{ name: "Hours Worked", data: [] }]);
   const cookies = new Cookies();
   const token = cookies.get("token");
@@ -215,134 +224,51 @@ function Dashboard() {
               </Card>
             </Grid>
             <Grid item xs={12} lg={6} xl={5}>
-              <Card>
-                <VuiBox>
-                  <VuiBox
-                    mb="24px"
-                    height="220px"
-                    sx={{
-                      background: linearGradient(
-                        cardContent.main,
-                        cardContent.state,
-                        cardContent.deg
-                      ),
-                      borderRadius: "20px",
-                    }}
-                  >
-                    <BarChart
-                      barChartData={barChartDataDashboard}
-                      barChartOptions={barChartOptionsDashboard}
-                    />
-                  </VuiBox>
+              <Card >
+                <VuiBox
+                
+                >
                   <VuiTypography variant="lg" color="white" fontWeight="bold" mb="5px">
-                    Active Users
+                    {" "}
+                    Custom Total Worktime Overview
                   </VuiTypography>
-                  <VuiBox display="flex" alignItems="center" mb="40px">
-                    <VuiTypography variant="button" color="success" fontWeight="bold">
-                      (+23){" "}
-                      <VuiTypography variant="button" color="text" fontWeight="regular">
-                        than last week
-                      </VuiTypography>
-                    </VuiTypography>
-                  </VuiBox>
-                  <Grid container spacing="50px">
-                    <Grid item xs={6} md={3} lg={3}>
-                      <Stack
-                        direction="row"
-                        spacing={{ sm: "10px", xl: "4px", xxl: "10px" }}
-                        mb="6px"
-                      >
-                        <VuiBox
-                          bgColor="info"
-                          display="flex"
-                          justifyContent="center"
-                          alignItems="center"
-                          sx={{ borderRadius: "6px", width: "25px", height: "25px" }}
-                        >
-                          <IoWallet color="#fff" size="12px" />
-                        </VuiBox>
-                        <VuiTypography color="text" variant="button" fontWeight="medium">
-                          Users
-                        </VuiTypography>
-                      </Stack>
-                      <VuiTypography color="white" variant="lg" fontWeight="bold" mb="8px">
-                        32,984
-                      </VuiTypography>
-                      <VuiProgress value={60} color="info" sx={{ background: "#2D2E5F" }} />
-                    </Grid>
-                    <Grid item xs={6} md={3} lg={3}>
-                      <Stack
-                        direction="row"
-                        spacing={{ sm: "10px", xl: "4px", xxl: "10px" }}
-                        mb="6px"
-                      >
-                        <VuiBox
-                          bgColor="info"
-                          display="flex"
-                          justifyContent="center"
-                          alignItems="center"
-                          sx={{ borderRadius: "6px", width: "25px", height: "25px" }}
-                        >
-                          <IoIosRocket color="#fff" size="12px" />
-                        </VuiBox>
-                        <VuiTypography color="text" variant="button" fontWeight="medium">
-                          Clicks
-                        </VuiTypography>
-                      </Stack>
-                      <VuiTypography color="white" variant="lg" fontWeight="bold" mb="8px">
-                        2,42M
-                      </VuiTypography>
-                      <VuiProgress value={60} color="info" sx={{ background: "#2D2E5F" }} />
-                    </Grid>
-                    <Grid item xs={6} md={3} lg={3}>
-                      <Stack
-                        direction="row"
-                        spacing={{ sm: "10px", xl: "4px", xxl: "10px" }}
-                        mb="6px"
-                      >
-                        <VuiBox
-                          bgColor="info"
-                          display="flex"
-                          justifyContent="center"
-                          alignItems="center"
-                          sx={{ borderRadius: "6px", width: "25px", height: "25px" }}
-                        >
-                          <FaShoppingCart color="#fff" size="12px" />
-                        </VuiBox>
-                        <VuiTypography color="text" variant="button" fontWeight="medium">
-                          Sales
-                        </VuiTypography>
-                      </Stack>
-                      <VuiTypography color="white" variant="lg" fontWeight="bold" mb="8px">
-                        2,400$
-                      </VuiTypography>
-                      <VuiProgress value={60} color="info" sx={{ background: "#2D2E5F" }} />
-                    </Grid>
-                    <Grid item xs={6} md={3} lg={3}>
-                      <Stack
-                        direction="row"
-                        spacing={{ sm: "10px", xl: "4px", xxl: "10px" }}
-                        mb="6px"
-                      >
-                        <VuiBox
-                          bgColor="info"
-                          display="flex"
-                          justifyContent="center"
-                          alignItems="center"
-                          sx={{ borderRadius: "6px", width: "25px", height: "25px" }}
-                        >
-                          <IoBuild color="#fff" size="12px" />
-                        </VuiBox>
-                        <VuiTypography color="text" variant="button" fontWeight="medium">
-                          Items
-                        </VuiTypography>
-                      </Stack>
-                      <VuiTypography color="white" variant="lg" fontWeight="bold" mb="8px">
-                        320
-                      </VuiTypography>
-                      <VuiProgress value={60} color="info" sx={{ background: "#2D2E5F" }} />
-                    </Grid>
-                  </Grid>
+                  <div style={{ marginTop: "20px" }}>
+                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "18px" }}>
+                      Total Days:{" "}
+                      <span style={{ marginLeft: "10px" }}> {customOverview.Total_Days}</span>
+                    </p>
+                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "18px" }}>
+                      Total Days:{" "}
+                      <span style={{ marginLeft: "10px" }}> {customOverview.Total_Flexitime}</span>
+                    </p>
+                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "18px" }}>
+                      Total Days:{" "}
+                      <span style={{ marginLeft: "10px" }}> {customOverview.Total_Holiday}</span>
+                    </p>
+                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "18px" }}>
+                      Total Days:{" "}
+                      <span style={{ marginLeft: "10px" }}> {customOverview.Total_Hours}</span>
+                    </p>
+                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "18px" }}>
+                      Total Days:{" "}
+                      <span style={{ marginLeft: "10px" }}> {customOverview.Total_SickLeave}</span>
+                    </p>
+                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "18px" }}>
+                      Total Days:{" "}
+                      <span style={{ marginLeft: "10px" }}> {customOverview.Total_Vacation}</span>
+                    </p>
+                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "18px" }}>
+                      Total Days:{" "}
+                      <span style={{ marginLeft: "10px" }}> {customOverview.Total_WorkDay}</span>
+                    </p>
+                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "18px" }}>
+                      Total Days:{" "}
+                      <span style={{ marginLeft: "10px" }}>
+                        {" "}
+                        {customOverview.Total_Worked.toFixed(3)}
+                      </span>
+                    </p>
+                  </div>
                 </VuiBox>
               </Card>
             </Grid>
