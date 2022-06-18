@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo, useContext } from "react";
 
+import "./styles/index.css";
+
 // react-router components
 import { Route, Switch, Redirect, useLocation } from "react-router-dom";
 
@@ -59,7 +61,6 @@ export default function App() {
   const checkLoggedIn = () => {
     const token = cookies.get("token");
     if (token !== undefined) {
-
       setUser({ isLoggedIn: true });
     }
   };

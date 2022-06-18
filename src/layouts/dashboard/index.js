@@ -59,11 +59,56 @@ import { lineChartDataDashboard } from "layouts/dashboard/data/lineChartData";
 import { lineChartOptionsDashboard } from "layouts/dashboard/data/lineChartOptions";
 import { barChartDataDashboard } from "layouts/dashboard/data/barChartData";
 import { barChartOptionsDashboard } from "layouts/dashboard/data/barChartOptions";
+import { useState } from "react";
+import axios from "axios";
+import Cookies from "universal-cookie";
+import { useEffect } from "react";
 
 function Dashboard() {
   const { gradients } = colors;
   const { cardContent } = gradients;
+  const [fromDate, setFromDate] = useState("2021-11");
+  const [toDate, setToDate] = useState(
+    new Date().getFullYear() + "-" + ("0" + (new Date().getMonth() + 1)).slice(-2)
+  );
+  const [customOverview, setCustomOverview] = useState({});
+  const [lineChartData, setLineChartData] = useState([{ name: "Hours Worked", data: [] }]);
+  const cookies = new Cookies();
+  const token = cookies.get("token");
+  const [lineChartOptions, setLineChartOptions] = useState(lineChartOptionsDashboard);
 
+  const getCustomWorktimeData = () => {
+    const numberOfDayInMonth = new Date(toDate.slice(0, 4), toDate.slice(5, 7), 0).getDate();
+
+    axios
+      .get(
+        `${process.env.REACT_APP_API_URL}/data/worktime/custom/${fromDate}-01/${toDate}-${numberOfDayInMonth}/`,
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      )
+      .then((data) => {
+        setCustomOverview(data.data.Overview);
+        console.log(data.data);
+        let workHours = [];
+        let dates = [];
+        data.data.Total_data.forEach((value) => {
+          workHours.push(value.WorkHours);
+          dates.push(value.WorkDate);
+        });
+        setLineChartData([{ name: "Hours Worked", data: workHours }]);
+
+        let temp = lineChartOptions;
+        temp["xaxis"]["categories"] = dates;
+        setLineChartOptions(temp);
+      });
+  };
+
+  useEffect(() => {
+    getCustomWorktimeData();
+  }, [toDate, fromDate]);
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -104,7 +149,7 @@ function Dashboard() {
             </Grid>
           </Grid>
         </VuiBox>
-        <VuiBox mb={3}>
+        {/* <VuiBox mb={3}>
           <Grid container spacing="18px">
             <Grid item xs={12} lg={12} xl={5}>
               <WelcomeMark />
@@ -116,28 +161,55 @@ function Dashboard() {
               <ReferralTracking />
             </Grid>
           </Grid>
-        </VuiBox>
+        </VuiBox> */}
         <VuiBox mb={3}>
           <Grid container spacing={3}>
             <Grid item xs={12} lg={6} xl={7}>
               <Card>
                 <VuiBox sx={{ height: "100%" }}>
                   <VuiTypography variant="lg" color="white" fontWeight="bold" mb="5px">
-                    Sales Overview
+                    Custom Worktime Overview
                   </VuiTypography>
-                  <VuiBox display="flex" alignItems="center" mb="40px">
-                    <VuiTypography variant="button" color="success" fontWeight="bold">
-                      +5% more{" "}
-                      <VuiTypography variant="button" color="text" fontWeight="regular">
-                        in 2021
-                      </VuiTypography>
-                    </VuiTypography>
+                  <VuiBox>
+                    <div style={{ display: "flex", marginTop: "20px", marginBottom: "20px" }}>
+                      <div>
+                        <p style={{ color: "grey", fontWeight: "bold" }}>From:</p>
+
+                        <input
+                          type="month"
+                          name="from"
+                          id=""
+                          value={fromDate}
+                          min="2021-11"
+                          max={toDate}
+                          onChange={(e) => {
+                            setFromDate(e.target.value);
+                          }}
+                        />
+                      </div>
+                      <div style={{ marginLeft: "80px" }}>
+                        <p style={{ color: "grey", fontWeight: "bold" }}>To:</p>
+
+                        <input
+                          type="month"
+                          name="from"
+                          id=""
+                          value={toDate}
+                          min={fromDate}
+                          max={
+                            new Date().getFullYear() +
+                            "-" +
+                            ("0" + (new Date().getMonth() + 1)).slice(-2)
+                          }
+                          onChange={(e) => {
+                            setToDate(e.target.value);
+                          }}
+                        />
+                      </div>
+                    </div>
                   </VuiBox>
                   <VuiBox sx={{ height: "310px" }}>
-                    <LineChart
-                      lineChartData={lineChartDataDashboard}
-                      lineChartOptions={lineChartOptionsDashboard}
-                    />
+                    <LineChart lineChartData={lineChartData} lineChartOptions={lineChartOptions} />
                   </VuiBox>
                 </VuiBox>
               </Card>
@@ -276,16 +348,15 @@ function Dashboard() {
             </Grid>
           </Grid>
         </VuiBox>
-        <Grid container spacing={3} direction="row" justifyContent="center" alignItems="stretch">
+        {/* <Grid container spacing={3} direction="row" justifyContent="center" alignItems="stretch">
           <Grid item xs={12} md={6} lg={8}>
             <Projects />
           </Grid>
           <Grid item xs={12} md={6} lg={4}>
             <OrderOverview />
           </Grid>
-        </Grid>
+        </Grid> */}
       </VuiBox>
-      <Footer />
     </DashboardLayout>
   );
 }
