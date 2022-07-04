@@ -1,0 +1,11 @@
+.rbc-btn-group{
+    display: none;
+}
+
+.rbc-ellipsis, .rbc-show-more, .rbc-row-segment .rbc-event-content, .rbc-event-label{
+    font-size: 16px;
+}
+
+.rbc-today{
+    background-color: rgb(25, 38, 126);
+}

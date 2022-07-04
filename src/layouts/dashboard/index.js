@@ -64,6 +64,15 @@ import axios from "axios";
 import Cookies from "universal-cookie";
 import { useEffect } from "react";
 
+// import calendar
+import { Calendar, momentLocalizer } from "react-big-calendar";
+import moment from "moment";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+
+import "../../styles/calendar.css";
+
+const localizer = momentLocalizer(moment);
+
 function Dashboard() {
   const { gradients } = colors;
   const { cardContent } = gradients;
@@ -71,7 +80,21 @@ function Dashboard() {
   const [toDate, setToDate] = useState(
     new Date().getFullYear() + "-" + ("0" + (new Date().getMonth() + 1)).slice(-2)
   );
+  const [monthlyDate, setMonthlyDate] = useState(
+    new Date().getFullYear() + "-" + ("0" + (new Date().getMonth() + 1)).slice(-2)
+  );
+  const [events, setEvents] = useState([]);
   const [customOverview, setCustomOverview] = useState({
+    Total_Days: 0,
+    Total_Flexitime: 0,
+    Total_Holiday: 0,
+    Total_Hours: 0,
+    Total_SickLeave: 0,
+    Total_Vacation: 0,
+    Total_WorkDay: 0,
+    Total_Worked: 0,
+  });
+  const [monthlyOverview, setMonthlyOverview] = useState({
     Total_Days: 0,
     Total_Flexitime: 0,
     Total_Holiday: 0,
@@ -111,9 +134,57 @@ function Dashboard() {
 
         let temp = lineChartOptions;
         temp["xaxis"]["categories"] = dates;
+
+       
+
+        console.log(temp);
         setLineChartOptions(temp);
       });
   };
+
+  const getMonthlyOverViewData = () => {
+    const currentDate = new Date(monthlyDate);
+    axios
+      .get(
+        `${process.env.REACT_APP_API_URL}/data/worktime/month/${currentDate.getFullYear()}/${
+          currentDate.getMonth() + 1
+        }/`,
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      )
+      .then((data) => {
+        setMonthlyOverview(data.data.Overview);
+        console.log(data.data);
+        let temp = [];
+        data.data.Monthly_data.forEach((value) => {
+          if (value.WorkType === "Hours") {
+            temp.push({
+              allDay: true,
+              title: "Worked",
+              start: value.WorkDate,
+              end: value.WorkDate,
+              workHours: value.WorkHours,
+            });
+          } else {
+            temp.push({
+              allDay: true,
+              title: value.WorkType,
+              start: value.WorkDate,
+              end: value.WorkDate,
+              workHours: value.WorkHours,
+            });
+          }
+        });
+
+        setEvents(temp);
+      });
+  };
+  useEffect(() => {
+    getMonthlyOverViewData();
+  }, [monthlyDate]);
 
   useEffect(() => {
     getCustomWorktimeData();
@@ -177,6 +248,117 @@ function Dashboard() {
               <Card>
                 <VuiBox sx={{ height: "100%" }}>
                   <VuiTypography variant="lg" color="white" fontWeight="bold" mb="5px">
+                    Monthly Days Overview
+                  </VuiTypography>
+                  <VuiBox>
+                    <div style={{ display: "flex", marginTop: "20px", marginBottom: "20px" }}>
+                      <div>
+                        <p style={{ color: "grey", fontWeight: "bold" }}>Select Month:</p>
+
+                        <input
+                          type="month"
+                          name="monthlyDate"
+                          id=""
+                          value={monthlyDate}
+                          min="2021-11"
+                          max={
+                            new Date().getFullYear() +
+                            "-" +
+                            ("0" + (new Date().getMonth() + 1)).slice(-2)
+                          }
+                          onChange={(e) => {
+                            setMonthlyDate(e.target.value);
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </VuiBox>
+                  <VuiBox sx={{ height: "500px" }}>
+                    {/* <LineChart lineChartData={lineChartData} lineChartOptions={lineChartOptions} /> */}
+                    <div style={{ color: "white" }}>
+                      <Calendar
+                        localizer={localizer}
+                        views={["month"]}
+                        events={events}
+                        startAccessor="start"
+                        endAccessor="end"
+                        date={monthlyDate}
+                        // components={{
+                        // 	dateCellWrapper: ColoredDateCellWrapper,
+                        // }}
+
+                        style={{ height: 500 }}
+                      />
+                    </div>
+                  </VuiBox>
+                </VuiBox>
+              </Card>
+            </Grid>
+            <Grid item xs={12} lg={6} xl={5}>
+              <Card>
+                <VuiBox
+                  style={{
+                    height: "635px",
+                    paddingLeft: "20px",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                  }}
+                >
+                  <VuiTypography
+                    variant="lg"
+                    color="white"
+                    fontWeight="bold"
+                    mb="5px"
+                    style={{ fontSize: "20px" }}
+                  >
+                    {" "}
+                    Monthly Total Worktime Overview
+                  </VuiTypography>
+                  <div style={{ marginTop: "20px" }}>
+                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "26px" }}>
+                      Total Days:{" "}
+                      <span style={{ marginLeft: "10px" }}> {monthlyOverview.Total_Days}</span>
+                    </p>
+                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "26px" }}>
+                      Total Flexitime:{" "}
+                      <span style={{ marginLeft: "10px" }}> {monthlyOverview.Total_Flexitime}</span>
+                    </p>
+                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "26px" }}>
+                      Total Holidays:{" "}
+                      <span style={{ marginLeft: "10px" }}> {monthlyOverview.Total_Holiday}</span>
+                    </p>
+                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "26px" }}>
+                      Total Hours:{" "}
+                      <span style={{ marginLeft: "10px" }}> {monthlyOverview.Total_Hours}</span>
+                    </p>
+                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "26px" }}>
+                      Total SickLeave:{" "}
+                      <span style={{ marginLeft: "10px" }}> {monthlyOverview.Total_SickLeave}</span>
+                    </p>
+                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "26px" }}>
+                      Total Vacation:{" "}
+                      <span style={{ marginLeft: "10px" }}> {monthlyOverview.Total_Vacation}</span>
+                    </p>
+                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "26px" }}>
+                      Total WorkDays:{" "}
+                      <span style={{ marginLeft: "10px" }}> {monthlyOverview.Total_WorkDay}</span>
+                    </p>
+                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "26px" }}>
+                      Total Worked Hours:{" "}
+                      <span style={{ marginLeft: "10px" }}>
+                        {" "}
+                        {monthlyOverview.Total_Worked.toFixed(3)}
+                      </span>
+                    </p>
+                  </div>
+                </VuiBox>
+              </Card>
+            </Grid>
+            <Grid item xs={12} lg={6} xl={7}>
+              <Card>
+                <VuiBox sx={{ height: "100%" }}>
+                  <VuiTypography variant="lg" color="white" fontWeight="bold" mb="5px">
                     Custom Worktime Overview
                   </VuiTypography>
                   <VuiBox>
@@ -224,45 +406,51 @@ function Dashboard() {
               </Card>
             </Grid>
             <Grid item xs={12} lg={6} xl={5}>
-              <Card >
+              <Card>
                 <VuiBox
-                
+                  style={{
+                    height: "450px",
+                    paddingLeft: "20px",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                  }}
                 >
                   <VuiTypography variant="lg" color="white" fontWeight="bold" mb="5px">
                     {" "}
                     Custom Total Worktime Overview
                   </VuiTypography>
                   <div style={{ marginTop: "20px" }}>
-                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "18px" }}>
+                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "26px" }}>
                       Total Days:{" "}
                       <span style={{ marginLeft: "10px" }}> {customOverview.Total_Days}</span>
                     </p>
-                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "18px" }}>
-                      Total Days:{" "}
+                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "26px" }}>
+                      Total Flexitime:{" "}
                       <span style={{ marginLeft: "10px" }}> {customOverview.Total_Flexitime}</span>
                     </p>
-                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "18px" }}>
-                      Total Days:{" "}
+                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "26px" }}>
+                      Total Holidays:{" "}
                       <span style={{ marginLeft: "10px" }}> {customOverview.Total_Holiday}</span>
                     </p>
-                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "18px" }}>
-                      Total Days:{" "}
+                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "26px" }}>
+                      Total Hours:{" "}
                       <span style={{ marginLeft: "10px" }}> {customOverview.Total_Hours}</span>
                     </p>
-                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "18px" }}>
-                      Total Days:{" "}
+                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "26px" }}>
+                      Total SickLeave:{" "}
                       <span style={{ marginLeft: "10px" }}> {customOverview.Total_SickLeave}</span>
                     </p>
-                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "18px" }}>
-                      Total Days:{" "}
+                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "26px" }}>
+                      Total Vacation:{" "}
                       <span style={{ marginLeft: "10px" }}> {customOverview.Total_Vacation}</span>
                     </p>
-                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "18px" }}>
-                      Total Days:{" "}
+                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "26px" }}>
+                      Total WorkDays:{" "}
                       <span style={{ marginLeft: "10px" }}> {customOverview.Total_WorkDay}</span>
                     </p>
-                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "18px" }}>
-                      Total Days:{" "}
+                    <p style={{ fontWeight: "bold", color: "#bababf", fontSize: "26px" }}>
+                      Total Worked Hours:{" "}
                       <span style={{ marginLeft: "10px" }}>
                         {" "}
                         {customOverview.Total_Worked.toFixed(3)}

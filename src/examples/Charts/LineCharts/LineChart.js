@@ -35,14 +35,25 @@ import ReactApexChart from "react-apexcharts";
 // }
 
 const LineChart = ({ lineChartData, lineChartOptions }) => {
+  const Chart = ()=>{
+    return(
+
+      <ReactApexChart
+        options={lineChartOptions}
+        series={lineChartData}
+        type="area"
+        width="100%"
+        height="100%"
+      />
+
+    )
+  }
+
+
   return (
-    <ReactApexChart
-      options={lineChartOptions}
-      series={lineChartData}
-      type="area"
-      width="100%"
-      height="100%"
-    />
+    <>
+    <Chart/>
+    </>
   );
 };
 
